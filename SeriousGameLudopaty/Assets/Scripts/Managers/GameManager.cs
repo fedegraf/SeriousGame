@@ -1,19 +1,52 @@
+using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     
+    public event Action<float> OnVariableChange;
+
     private int currentDay = 1;
+    [SerializeField] private int hoursOfTheDay = 10;
+    private int hoursRemaining;
     private float familyWellness = 100f; // escala 0-100 
     private float money = 500f; // Dinero inicial
+
+    [SerializeField] private TextMeshProUGUI currencyText;
+    [SerializeField] private TextMeshProUGUI familyWellnessText;
+    [SerializeField] private TextMeshProUGUI hoursRemainingText;
+    [SerializeField] private TextMeshProUGUI daysPlayingText;
     
     public int CurrentDay { get => currentDay; }
+    
+    public int HoursRemaining
+    {
+        get => hoursRemaining;
+        set
+        {
+            hoursRemaining = value;
+            UpdateHours();
+        }
+    }
 
-    public float FamilyWellness { get => familyWellness; set => FamilyWellness = value; }
+    public float FamilyWellness
+    {
+        get => familyWellness;
+        set { 
+            familyWellness = value;
+            OnVariableChange.Invoke(familyWellness);
+        }
+        
+    }
 
-    public float Money { get => money; }
+    public float Money { get => money;         
+        set { 
+        money = value;
+        OnVariableChange.Invoke(money);
+    }}
     
     public List<InventoryItem> inventory = new List<InventoryItem>();
     
@@ -35,24 +68,43 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        OnVariableChange  += UpdateUITexts;
+        OnVariableChange += CheckForGameOver;
+
+        hoursRemaining = hoursOfTheDay;
+        
+        hoursRemainingText.text = "Horas disponibles: " + hoursRemaining;
+        daysPlayingText.text = "dias jugados: 1";
     }
-    
+
+    private void UpdateUITexts(float obj)
+    {
+        currencyText.text = "Dinero: $" + money;
+        familyWellnessText.text = "Bienestar Familiar: " + familyWellness;
+    }
+
     public void StartNewDay()
     {
+        Debug.Log("New Day Started");
         // Deduct daily costs
         money -= dailyFoodCost + dailyRentCost;
-        
-        // Check for game over conditions
-        if (money <= 0 || familyWellness <= 0)
-        {
-            GameOver();
-            return;
-        }
-        
-        // Update wellness based on conditions
         UpdateFamilyWellness();
-        
+
+        CheckForGameOver(0);
+
         currentDay++;
+        daysPlayingText.text = "dias jugados: " + currentDay;
+    }
+
+    public void UpdateHours()
+    {
+        Debug.Log("Hours Remaining: " + hoursRemaining);
+        if (hoursRemaining <= 0)
+        {
+            StartNewDay();
+            hoursRemaining += hoursOfTheDay;
+        }
+        hoursRemainingText.text = "Horas disponibles: " + hoursRemaining;
     }
     
     void UpdateFamilyWellness()
@@ -68,10 +120,12 @@ public class GameManager : MonoBehaviour
         familyWellness = Mathf.Clamp(familyWellness + wellnessChange, 0f, 100f);
     }
     
-    void GameOver()
+    void CheckForGameOver(float obj)
     {
-        // Show game over screen
-        Debug.Log("Game Over! Days survived: " + currentDay);
+        if (money <= 0 || familyWellness <= 0)
+        {
+            // Show game over screen
+            Debug.Log("Game Over! Days survived: " + currentDay);        }
     }
     
     public void AddMoney(float amount)
@@ -93,4 +147,5 @@ public class GameManager : MonoBehaviour
     {
         inventory.Remove(item);
     }
+
 }
