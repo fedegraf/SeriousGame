@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Fondo UI
   - 
   - 
   - 
@@ -40,4 +40,13 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Botones
+    uniqueID: 1950196207
+    locked: 0
+  - name: Texto y otros
+    uniqueID: 1195995245
+    locked: 0
+  - name: Fondos
+    uniqueID: 2072488699
     locked: 0
