@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -11,6 +12,7 @@ public class GameManager : MonoBehaviour
 
     private int currentDay = 1;
     [SerializeField] private int hoursOfTheDay = 10;
+    [SerializeField] private float displayTime;
     private int hoursRemaining;
     private float familyWellness = 100f; // escala 0-100 
     private float money = 500f; // Dinero inicial
@@ -19,7 +21,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI familyWellnessText;
     [SerializeField] private TextMeshProUGUI hoursRemainingText;
     [SerializeField] private TextMeshProUGUI daysPlayingText;
-    
+
     public int CurrentDay { get => currentDay; }
     
     public int HoursRemaining
